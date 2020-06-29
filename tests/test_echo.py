@@ -7,7 +7,7 @@ Students are expected to edit this module, to add more tests to run
 against the 'echo.py' program.
 """
 
-__author__ = "???"
+__author__ = "Michael DeMory, with help from Zac Gerber and Daniel video."
 
 import sys
 import importlib
@@ -74,12 +74,13 @@ class TestEcho(unittest.TestCase):
         # check the module for required functions
         assert "main" in cls.funcs, "Missing required function main()"
         assert "create_parser" in cls.funcs, "Missing required function create_parser()"
-
+    
     def setUp(self):
         """Called by parent class ONCE before all tests are run"""
         # your code here - use this space to create any instance variables
         # that will be visible to your other test methods
         pass
+        
 
     def test_parser(self):
         """Check if create_parser() returns a parser object"""
@@ -88,9 +89,13 @@ class TestEcho(unittest.TestCase):
             result, argparse.ArgumentParser,
             "create_parser() function is not returning a parser object")
 
-    #
-    # Students: add more parser tests here
-    #
+
+    def test_help(self):
+        args = ["--help"]
+        stdout, stderr = run_capture(self.module.__file__, args)
+        with open('USAGE') as f:
+            usage = f.read()
+        self.assertEqual('\n'.join(stdout) + '\n', usage)
 
     def test_echo(self):
         """Check if main() function prints anything at all"""
@@ -114,9 +119,64 @@ class TestEcho(unittest.TestCase):
         assert output, "The program did not print anything."
         self.assertEqual(output[0], "hello world")
 
-    #
-    # Students: add more cmd line options tests here.
-    #
+    
+    def test_lower_long(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["--lower", "HELLO WORLD"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "hello world")
+
+    def test_upper_short(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["-u", "hello world"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "HELLO WORLD")
+
+    def test_upper_long(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["--upper", "hello world"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "HELLO WORLD")
+
+    def test_title_short(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["-t", "hello world"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "Hello World")
+
+    def test_title_long(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["--title", "hello world"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "Hello World")
+
+    def test_no_options(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["hello world"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "hello world")
+
+    def test_all_options(self):
+            """Check if short option '-l' performs lowercasing"""
+            args = ["-tul", "HeLlO wOrLd"]
+            with Capturing() as output:
+                self.module.main(args)
+            assert output, "The program did not print anything."
+            self.assertEqual(output[0], "Hello World")
+
+
 
 
 if __name__ == '__main__':
